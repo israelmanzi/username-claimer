@@ -16,6 +16,4 @@ jobs:
         uses: actions/checkout@v2
       - name: Clear .txt files
         run: |
-          for file in ${{ github.workspace }}/*.txt; do
-            echo "" > $file
-          done
+          find . -type f -name "*.txt" -exec truncate -s 0 {} \;
