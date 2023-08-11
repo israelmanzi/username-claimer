@@ -1,24 +1,21 @@
 name: ci
-
 on:
-    push:
-        branches:
-            - "main"
-            - "master"
-    pull_request:
-        branches:
-            - "main"
-            - "master"
-
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+        - main
+        - master
 jobs:
-    clear-txt_files:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-            - name: Clear txt files
-              run: |
-                  rm -rf *.txt
-            - name: Commit changes
-              run: |
-                  git config --local user.email "
+  clear-txt-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Clear .txt files
+        run: |
+          for file in ${{ github.workspace }}/*.txt; do
+            echo "" > $file
+          done

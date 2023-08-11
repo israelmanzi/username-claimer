@@ -39,6 +39,7 @@ def login(username, password, proxy):
 			functions.logtofile2("accounts_couldnotcheck.txt", username + ":" + password)
 		try:
 			response = requests.post(url=url, headers=headers, data=data, timeout=10, proxies=proxy)
+			print(response)
 			if not response.text:
 				pass
 				attempts += 1
@@ -50,6 +51,8 @@ def login(username, password, proxy):
 	cookies = response.cookies
 	bad = False
 	loadjson = json.loads(response.text)
+
+	print(response.text)
 
 	try:
 		if username == loadjson["logged_in_user"]["username"]:
