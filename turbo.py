@@ -8,13 +8,12 @@ import os
 import time
 import threading
 
-claim_queue = []
+claim_queue = ["test12"]
 claiming = []
 claimed = []
 failed_claim = []
-ready = []
+ready = ["true"]
 claim_accounts = []
-
 
 def load_claim_account(account, proxy):
     with open(account, 'r') as f:
@@ -55,15 +54,17 @@ def load_claim_account(account, proxy):
         "TE": "trailers",
     }
     if proxy == "true":
-        proxy = {"http": "http://" + functions.getproxy(
-            'files/proxies.txt'), "https": "http://" + functions.getproxy('files/proxies.txt')}
+        proxy = f"https://spwblik9ka:9Hub2Pbx69gXhkelhF@gate.smartproxy.com:10000"
     else:
         proxy = {"http": ""}
 
     while True:
         try:
             grab = requests.get("https://www.instagram.com/accounts/edit/",
-                                headers=getheaders, timeout=10, proxies=proxy)
+                                headers=getheaders, timeout=10, proxies={
+                                    'http': proxy,
+                                    'https': proxy
+                                })
             if not grab.text:
                 pass
             else:
@@ -72,12 +73,13 @@ def load_claim_account(account, proxy):
             print("[>] Connection timed out. Proxy is probably bad.")
             return
 
-    first_response = grab.content
+    first_response = grab.text
     biography = functions.find_between(
         str(first_response), '{"biography":"', '",')
     firstname = functions.find_between(
         str(first_response), '"first_name":"', '",')
-    email = functions.find_between(str(first_response), '"email":"', '",')
+    # email = functions.find_between(str(first_response), '"email":"', '",')
+    email = "Jeff.mariafyz791@rambler.ru"
     phone = functions.find_between(
         str(first_response), '"phone_number":"', '",')
     firstname = functions.unescape(firstname)
@@ -117,7 +119,10 @@ def load_claim_account(account, proxy):
 
                 try:
                     send = requests.post("https://www.instagram.com/accounts/edit/",
-                                         data=data1, timeout=10, headers=postheaders, proxies=proxy)
+                                         data=data1, timeout=10, headers=postheaders, proxies={
+                                             'http': proxy,
+                                             'https': proxy
+                                         })
                 except requests.ConnectionError:
                     print("[>] Connection timed out. Proxy is probably bad.")
                     return
@@ -154,7 +159,6 @@ def load_claim_account(account, proxy):
                         functions.discordwebbook(
                             "Turbo", account, claim_username)
                         return
-                        break
                     else:
                         if data['message']['errors'][0] == "This username isn't available. Please try another.":
                             print(functions.CRED +
@@ -194,6 +198,7 @@ def check_accounts(account, delay, timeout, proxy):
         else:
             with open(account, 'r') as f:
                 for line in f:
+                    print(f"Line: {line}")
                     csrf = functions.find_between(line, "csrftoken=", " for")
                     mid = functions.find_between(line, "mid=", " for")
                     ds_user_id = functions.find_between(
@@ -217,8 +222,7 @@ def check_accounts(account, delay, timeout, proxy):
             }
 
             if proxy == "true":
-                proxy = {"http": "http://" + functions.getproxy(
-                    'files/proxies.txt'), "https": "http://" + functions.getproxy('files/proxies.txt')}
+                proxy = f"https://spwblik9ka:9Hub2Pbx69gXhkelhF@gate.smartproxy.com:10000"
             else:
                 proxy = {"http": ""}
 
@@ -259,7 +263,10 @@ def check_accounts(account, delay, timeout, proxy):
                                 while True:
                                     try:
                                         grab = requests.get(
-                                            url, headers=getheaders, timeout=timeout, proxies=proxy)
+                                            url, headers=getheaders, timeout=timeout, proxies={
+                                                'http': proxy,
+                                                'https': proxy
+                                            })
                                         if not grab.text:
                                             pass
                                         else:
@@ -315,21 +322,16 @@ def check_accounts(account, delay, timeout, proxy):
 
 
 def run():
-    delay = input("[>] Delay per request in seconds: ")
-    timeout = input("[>] Request timeout in seconds: ")
+    delay = 3
+    timeout = 5
 
-    question = input(
-        functions.YELLOW + "[>] Would you like to use proxies from proxies.txt? (Y/N): ")
-    if question == "Y" or question == "y":
-        proxies = "true"
-    else:
-        proxies = "false"
+    proxies = "true"
 
-    for filename in os.listdir("turbo_claim"):
-        f = os.path.join("turbo_claim", filename)
-        if os.path.isfile(f):
-            th = threading.Thread(target=load_claim_account, args=(f, "false"))
-            th.start()
+    # for filename in os.listdir("turbo_claim"):
+    #     f = os.path.join("turbo_claim", filename)
+    #     if os.path.isfile(f):
+    #         th = threading.Thread(target=load_claim_account, args=(f, "true"))
+    #         th.start()
 
     for filename in os.listdir("turbo_check"):
         f = os.path.join("turbo_check", filename)
@@ -340,20 +342,21 @@ def run():
 
 
 def turbo():
-    print(functions.CRED + "\n[!] Important Information:")
-    print(functions.YELLOW +
-          "[>] Place accounts you wish to check usernames from /accounts/ folder into /turbo_check/ folder")
-    print(functions.YELLOW +
-          "[>] Place accounts you wish to claim usernames from /accounts/ folder into /turbo_claim/ folder.")
-    print(functions.YELLOW +
-          "[>] Place list of usernames you wish to turbo in /files/turbo_usernames.txt")
+    # print(functions.CRED + "\n[!] Important Information:")
+    # print(functions.YELLOW +
+    #       "[>] Place accounts you wish to check usernames from /accounts/ folder into /turbo_check/ folder")
+    # print(functions.YELLOW +
+    #       "[>] Place accounts you wish to claim usernames from /accounts/ folder into /turbo_claim/ folder.")
+    # print(functions.YELLOW +
+    #       "[>] Place list of usernames you wish to turbo in /files/turbo_usernames.txt")
 
     while True:
         question = input("[>] Are you ready to continue? Y/N: ")
 
         files = functions.get_files("turbo_check")
-        files2 = functions.get_files("turbo_claim")
-        if len(files) <= 0 or len(files2) <= 0:
+        # files2 = functions.get_files("turbo_claim")
+
+        if len(files) <= 0:
             print("[!] We could not locate any files in the folder! Make sure the accounts are in the right folder before continuing.")
         else:
             if question == "Y" or question == "y":

@@ -12,6 +12,7 @@ import time as t
 
 claimed = []
 
+
 def start(account, target, delay, proxy):
     with open(account, 'r') as f:
         for line in f:
@@ -52,15 +53,17 @@ def start(account, target, delay, proxy):
     }
 
     if proxy == "true":
-        proxy = {"http": "http://" + functions.getproxy(
-            'files/proxies.txt'), "https": "http://" + functions.getproxy('files/proxies.txt')}
+        proxy = f"https://spwblik9ka:9Hub2Pbx69gXhkelhF@gate.smartproxy.com:10000"
     else:
         proxy = {"http": ""}
 
     while True:
         try:
             grab = requests.get("https://www.instagram.com/accounts/edit/",
-                                headers=getheaders, timeout=10, proxies=proxy)
+                                headers=getheaders, timeout=10, proxies={
+                                    'http': proxy,
+                                    'https': proxy
+                                })
             if not grab.text:
                 pass
             else:
@@ -184,9 +187,8 @@ def target():
     if question == "y" or question == "Y":
         check_files = functions.get_files("turbo_claim")
         if len(check_files) >= 1:
-            target = input(functions.YELLOW +
-                           "[>] What is the handle you want to target: ")
-            delay = input(functions.YELLOW + "[>] Delay per request: ")
+            target = 3
+            delay = 5
 
             for filename in os.listdir("turbo_claim"):
                 f = os.path.join("turbo_claim", filename)

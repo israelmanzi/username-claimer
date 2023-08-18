@@ -25,5 +25,4 @@ if __name__ == '__main__':
 		login.logintotheaccounts()
 	else:
 		print(functions.CRED+ "\n[?] Invalid option, try again.")
-		time.sleep(3)
 		pass
