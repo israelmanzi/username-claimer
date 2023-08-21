@@ -53,7 +53,9 @@ def start(account, target, delay, proxy):
     }
 
     if proxy == "true":
-        proxy = f"https://spwblik9ka:9Hub2Pbx69gXhkelhF@gate.smartproxy.com:10000"
+        _user_ = 'spwblik9ka'
+        _pass_ = '9Hub2Pbx69gXhkelhF'
+        proxy = f"https://{_user_}:{_pass_}@gate.smartproxy.com:10000"
     else:
         proxy = {"http": ""}
 

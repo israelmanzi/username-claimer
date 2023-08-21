@@ -72,7 +72,6 @@ def login(username: str, password: str, proxy: str):
 
 	try:
 		if username == loadjson["logged_in_user"]["username"]:
-			print("Here")
 			print(functions.CGREEN+"[>] Successfully logged in: " + username)
 			functions.logtofile("accounts/" + username + "", cookies)
 			functions.logtofile2("accounts_working.txt", username + ":" + password)

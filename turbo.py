@@ -8,12 +8,13 @@ import os
 import time
 import threading
 
-claim_queue = ["test12"]
+claim_queue = []
 claiming = []
 claimed = []
 failed_claim = []
-ready = ["true"]
+ready = []
 claim_accounts = []
+
 
 def load_claim_account(account, proxy):
     with open(account, 'r') as f:
@@ -25,6 +26,7 @@ def load_claim_account(account, proxy):
 
     cookie = "csrftoken=" + csrf + ";mid=" + mid + \
         ";ds_user_id=" + ds_user_id + ";sessionid=" + sessionid
+
     getheaders = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
@@ -54,17 +56,16 @@ def load_claim_account(account, proxy):
         "TE": "trailers",
     }
     if proxy == "true":
-        proxy = f"https://spwblik9ka:9Hub2Pbx69gXhkelhF@gate.smartproxy.com:10000"
+        _user_ = 'spwblik9ka'
+        _pass_ = '9Hub2Pbx69gXhkelhF'
+        proxy = f"https://{_user_}:{_pass_}@gate.smartproxy.com:10000"
     else:
         proxy = {"http": ""}
 
     while True:
         try:
             grab = requests.get("https://www.instagram.com/accounts/edit/",
-                                headers=getheaders, timeout=10, proxies={
-                                    'http': proxy,
-                                    'https': proxy
-                                })
+                                headers=getheaders, timeout=10)
             if not grab.text:
                 pass
             else:
@@ -74,12 +75,13 @@ def load_claim_account(account, proxy):
             return
 
     first_response = grab.text
+
     biography = functions.find_between(
         str(first_response), '{"biography":"', '",')
     firstname = functions.find_between(
         str(first_response), '"first_name":"', '",')
-    # email = functions.find_between(str(first_response), '"email":"', '",')
-    email = "Jeff.mariafyz791@rambler.ru"
+    email = functions.find_between(str(first_response), '"email":"', '",')
+    # email = "Jeff.mariafyz791@rambler.ru"
     phone = functions.find_between(
         str(first_response), '"phone_number":"', '",')
     firstname = functions.unescape(firstname)
@@ -198,7 +200,6 @@ def check_accounts(account, delay, timeout, proxy):
         else:
             with open(account, 'r') as f:
                 for line in f:
-                    print(f"Line: {line}")
                     csrf = functions.find_between(line, "csrftoken=", " for")
                     mid = functions.find_between(line, "mid=", " for")
                     ds_user_id = functions.find_between(
@@ -222,7 +223,9 @@ def check_accounts(account, delay, timeout, proxy):
             }
 
             if proxy == "true":
-                proxy = f"https://spwblik9ka:9Hub2Pbx69gXhkelhF@gate.smartproxy.com:10000"
+                _user_ = 'spwblik9ka'
+                _pass_ = '9Hub2Pbx69gXhkelhF'
+                proxy = f"https://{_user_}:{_pass_}@gate.smartproxy.com:10000"
             else:
                 proxy = {"http": ""}
 
@@ -327,15 +330,17 @@ def run():
 
     proxies = "true"
 
-    # for filename in os.listdir("turbo_claim"):
-    #     f = os.path.join("turbo_claim", filename)
-    #     if os.path.isfile(f):
-    #         th = threading.Thread(target=load_claim_account, args=(f, "true"))
-    #         th.start()
+    for filename in os.listdir("turbo_claim"):
+        f = os.path.join("turbo_claim", filename)
+        if os.path.isfile(f):
+            print("[>] Loaded claim account: %s" % (f))
+            th = threading.Thread(target=load_claim_account, args=(f, proxies))
+            th.start()
 
     for filename in os.listdir("turbo_check"):
         f = os.path.join("turbo_check", filename)
         if os.path.isfile(f):
+            print("[>] Loaded check account: %s" % (f))
             th = threading.Thread(target=check_accounts, args=(
                 f, int(delay), int(timeout), proxies))
             th.start()
@@ -354,9 +359,9 @@ def turbo():
         question = input("[>] Are you ready to continue? Y/N: ")
 
         files = functions.get_files("turbo_check")
-        # files2 = functions.get_files("turbo_claim")
+        files2 = functions.get_files("turbo_claim")
 
-        if len(files) <= 0:
+        if len(files) <= 0 or len(files2) <= 0:
             print("[!] We could not locate any files in the folder! Make sure the accounts are in the right folder before continuing.")
         else:
             if question == "Y" or question == "y":
