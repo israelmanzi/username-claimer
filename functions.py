@@ -105,3 +105,10 @@ def firsttime():
             logtofile("files/check.txt", "1")
         else:
             pass
+
+def check_username(username: str):
+    resp = requests.get(f"https://instagram-username.firebaseapp.com/check?username={username}")
+    if resp.status_code != 200:
+        return True
+    else:
+        return False

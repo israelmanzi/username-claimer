@@ -356,17 +356,54 @@ def turbo():
     #       "[>] Place list of usernames you wish to turbo in /files/turbo_usernames.txt")
 
     while True:
-        question = input("[>] Are you ready to continue? Y/N: ")
-
         files = functions.get_files("turbo_check")
         files2 = functions.get_files("turbo_claim")
+
+        for filename in os.listdir("turbo_claim"):
+            f = os.path.join("turbo_claim", filename)
+            if os.path.isfile(f):
+                with open(f, 'r') as r:
+                    for line in r:
+                        csrf = functions.find_between(
+                            line, "csrftoken=", " for")
+                        mid = functions.find_between(line, "mid=", " for")
+                        ds_user_id = functions.find_between(
+                            line, "ds_user_id=", " for")
+                        sessionid = functions.find_between(
+                            line, "sessionid=", " for")
+
+        cookie = "csrftoken=" + csrf + ";mid=" + mid + \
+            ";ds_user_id=" + ds_user_id + ";sessionid=" + sessionid
+        _user_ = 'spwblik9ka'
+        _pass_ = '9Hub2Pbx69gXhkelhF'
+        proxy = f"https://{_user_}:{_pass_}@gate.smartproxy.com:10000"
 
         if len(files) <= 0 or len(files2) <= 0:
             print("[!] We could not locate any files in the folder! Make sure the accounts are in the right folder before continuing.")
         else:
-            if question == "Y" or question == "y":
-                run()
-                break
+            # run()
+
+            turbo_usernames = []
+            available_usernames = []
+
+            with open('files/turbo_usernames.txt', 'r') as file:
+                for line in file:
+                    turbo_usernames.append(line.strip())
+
+            url = f"https://i.instagram.com/api/v1/users/{ds_user_id}/info"
+            user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 12_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 105.0.0.11.118 (iPhone11,8; iOS 12_3_1; en_US; en-US; scale=2.00; 828x1792; 165586599)"
+
+            info = requests.get(url, headers={
+                'User-Agent': user_agent
+            })
+
+            print(info)
+
+            if not info.text:
+                print(
+                    functions.CRED + "[>] Something went wrong getting data from Instagram, retrying")
+
             else:
-                print(functions.CRED + "[!] Exiting")
-                exit()
+                pass
+
+            break
